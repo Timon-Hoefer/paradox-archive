@@ -294,7 +294,9 @@
       }
 
       function isCollapsed() {
-        return innerWidth <= LOCK_WIDTH && innerHeight <= LOCK_HEIGHT;
+        const compactWindow = innerWidth <= LOCK_WIDTH && innerHeight <= LOCK_HEIGHT;
+        const phoneLandscape = innerWidth > innerHeight && innerWidth <= 960 && innerHeight <= 440;
+        return compactWindow || phoneLandscape;
       }
 
       function updateSpace() {

@@ -42,3 +42,5 @@ browser that the entry is shared and the first session cannot submit twice.
 The answer endpoint allows 12 attempts per ten-minute window for each hashed
 visitor address. The Hall of Fame keeps the newest 50 entries server-side.
 
+Production secrets configured.
+

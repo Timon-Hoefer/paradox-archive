@@ -2,6 +2,12 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "paradox-archive",
   "compatibility_date": "2026-07-13",
-  "pages_build_output_dir": "./outputs"
+  "pages_build_output_dir": "./outputs",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "paradox-archive-db",
+      "database_id": "8d33e3f4-89dd-44c1-9c5f-f33f54d8d31d"
+    }
+  ]
 }
-

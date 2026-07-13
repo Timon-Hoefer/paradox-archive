@@ -366,7 +366,7 @@
         }
       });
 
-      button.addEventListener('click', (event) => {
+      button.addEventListener('click', async (event) => {
         if (!isCollapsed()) {
           event.preventDefault();
           escapeFrom(lastPointer.x, lastPointer.y);
@@ -376,6 +376,13 @@
         document.body.classList.remove('collapsed');
         document.body.classList.add('solved');
         document.title = 'Seal I Broken — The Paradox Archive';
+        try {
+          await fetch('/api/reset-session', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json' }
+          });
+        } catch {}
       });
 
       document.addEventListener('pointermove', handlePointer, { passive: true });

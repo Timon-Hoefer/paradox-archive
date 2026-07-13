@@ -48,6 +48,11 @@ export function sessionCookie(sessionId, request) {
   return `${SESSION_COOKIE}=${sessionId}; Path=/; HttpOnly${secure}; SameSite=Strict; Max-Age=${SESSION_MAX_AGE_SECONDS}`;
 }
 
+export function clearSessionCookie(request) {
+  const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : '';
+  return `${SESSION_COOKIE}=; Path=/; HttpOnly${secure}; SameSite=Strict; Max-Age=0`;
+}
+
 export async function keyedHash(secret, value) {
   const key = await crypto.subtle.importKey(
     'raw',
@@ -113,4 +118,3 @@ export function normalizeEntry(value) {
 export function characterLength(value) {
   return Array.from(value).length;
 }
-

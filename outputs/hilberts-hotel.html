@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#070912">
+  <title>The Paradox Archive — A Night at Hilbert's Hotel</title>
+  <style>
+    :root{color-scheme:dark;--void:#0b0c0f;--panel:#111318;--ink:#f0eee8;--muted:#85827b;--line:#373840;--gold:#e5b85d;--good:#9dcc73;--danger:#e47b82;--blue:#79c6e8;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    *{box-sizing:border-box}html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--void)}body{color:var(--ink)}button{font:inherit}
+    .intro{position:fixed;inset:0;z-index:500;display:grid;place-items:center;overflow:auto;padding:28px;background:var(--void)}.intro.dismissed{display:none}.intro-inner{width:min(780px,100%);text-align:center}.intro-kicker{margin:0 0 15px;color:var(--gold);font:700 11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.15em;text-transform:uppercase}.intro h1{margin:0;font-size:clamp(40px,7vw,76px);line-height:.98;letter-spacing:-.05em;font-weight:650}.intro-copy{width:min(650px,100%);margin:23px auto 0;color:var(--muted);font-size:clamp(15px,1.8vw,18px);line-height:1.65}.intro-copy strong{color:var(--ink)}.night-line{width:min(620px,100%);margin:26px auto 0;display:grid;grid-template-columns:repeat(3,1fr);border-block:1px solid var(--line)}.night-rule{padding:13px 10px;color:var(--muted);font:600 9px/1.45 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:uppercase}.night-rule strong{display:block;margin-top:4px;color:var(--ink);font-size:12px}.night-rule+.night-rule{border-left:1px solid var(--line)}#intro-start{margin-top:27px;padding:13px 22px;border:1px solid var(--gold);border-radius:999px;color:#17130b;background:var(--gold);cursor:pointer;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+    .app{position:relative;width:100%;height:100dvh;min-height:100%;background:var(--void)}.grid{display:none}.topbar{height:54px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:0 24px;border-bottom:1px solid #24252a;color:var(--muted);letter-spacing:.11em;text-transform:uppercase;font-size:10px}.brand{display:flex;align-items:center;gap:9px;color:var(--ink);font-weight:750}.brand-mark{width:8px;height:8px;border:1px solid var(--gold);transform:rotate(45deg)}.chapter{color:var(--muted)}.seals{display:flex;gap:6px}.seal{width:7px;height:7px;border:1px solid #3d3e44;border-radius:50%}.seal.done{background:#62636a}.seal.active{border-color:var(--gold);background:var(--gold)}
+    .brief{height:128px;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:10px 28px 16px}.eyebrow{margin:0 0 5px;color:var(--gold);font:700 9px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}.brief h1{margin:0;font-size:clamp(27px,3.2vw,38px);line-height:1.02;letter-spacing:-.04em;font-weight:650}.brief h1 em{color:var(--ink);font-style:normal}.brief-copy{width:min(410px,38vw);margin:0;color:var(--muted);font-size:13px;line-height:1.5}.brief-copy strong{color:var(--ink)}.hilbert-quote{padding-left:15px;border-left:2px solid var(--gold)}.hilbert-quote p{margin:0;color:#b7b3aa}.hilbert-quote cite{display:block;margin-top:8px;color:var(--gold);font-size:10px;font-style:normal;letter-spacing:.08em}
+    .board{height:calc(100dvh - 260px);min-height:350px;display:grid;grid-template-columns:170px minmax(0,1fr);gap:24px;padding:0 24px}.waiting{position:relative;min-height:0;border:1px dashed #45464c;border-radius:12px}.waiting-head{height:58px;padding:13px 14px;border-bottom:1px solid #2d2e33;color:var(--ink);font:700 9px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}.waiting-head span{display:block;margin-top:3px;color:var(--danger);font-size:10px}.waiting-people{position:relative;display:flex;flex-wrap:wrap;align-content:flex-start;justify-content:center;gap:6px;padding:17px 10px;min-height:calc(100% - 58px)}.waiting.empty .waiting-people::after{content:"EMPTY";position:absolute;inset:0;display:grid;place-items:center;color:var(--good);font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em}
+    .hotel{position:relative;min-width:0;min-height:0;overflow:hidden;border-bottom:1px solid #4a4b50}.hotel::after{content:"";position:absolute;z-index:8;right:0;top:0;bottom:0;width:90px;pointer-events:none;background:linear-gradient(90deg,transparent,var(--void))}.corridor-label{position:absolute;z-index:9;top:10px;left:7px;color:var(--muted);font:650 9px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}.corridor-label strong{color:var(--ink)}.corridor{position:absolute;inset:0;overflow-x:auto;overflow-y:hidden;scrollbar-color:#55565d transparent;scrollbar-width:thin;cursor:ew-resize}.corridor::-webkit-scrollbar{height:6px}.corridor::-webkit-scrollbar-thumb{background:#55565d}.room-track{display:flex;align-items:end;gap:14px;width:max-content;min-height:100%;padding:62px 112px 25px 8px}
+    .room{position:relative;flex:0 0 118px;height:182px;background:#4a4b51;clip-path:polygon(50% 0,100% 25%,100% 100%,0 100%,0 25%);transition:background .18s,transform .18s}.room::before{content:"";position:absolute;z-index:0;inset:2px;background:var(--panel);clip-path:inherit}.room-number{position:absolute;z-index:2;top:31px;left:50%;transform:translateX(-50%);color:#aaa8a2;font:700 13px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.room-people{position:absolute;z-index:3;left:8px;right:8px;top:58px;bottom:43px;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:1px}.room-light{position:absolute;z-index:1;left:50%;bottom:2px;width:32px;height:41px;transform:translateX(-50%);border:2px solid #4a4b51;border-bottom:0;background:#15171c}.room.vacant{background:var(--good)}.room.vacant .room-light{border-color:var(--good);background:rgba(157,204,115,.08)}.room.collision{background:var(--danger)}.room.collision .room-light{border-color:var(--danger);background:rgba(228,123,130,.08)}.room.drop-flash{animation:flash .42s ease}
+    .person-card{position:relative;width:46px;height:70px;padding:0;border:0;border-radius:8px;color:#ddd;background:transparent;cursor:grab;touch-action:none;user-select:none;transition:background .14s,transform .14s}.person-card:hover,.person-card.selected{background:rgba(255,255,255,.07);transform:translateY(-2px)}.stick-head{position:absolute;top:1px;left:50%;width:26px;height:26px;transform:translateX(-50%);border:2px solid currentColor;border-radius:50%}.stick-body{position:absolute;top:29px;left:50%;width:2px;height:18px;transform:translateX(-50%);background:currentColor}.stick-body::before{content:"";position:absolute;top:6px;left:-13px;width:28px;height:2px;background:currentColor}.stick-body::after{content:"";position:absolute;top:16px;left:-7px;width:2px;height:20px;background:currentColor;box-shadow:14px 0 0 currentColor}.person-number{position:absolute;z-index:2;top:1px;left:50%;width:26px;height:26px;padding:0;display:grid;place-items:center;transform:translateX(-50%);background:transparent;font:800 8px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.person-card.you{width:58px;color:var(--gold)}.person-card.you .person-number{background:transparent;color:var(--gold)}.person-card.you::after{content:"YOU";position:absolute;left:50%;bottom:-2px;transform:translateX(-50%);color:var(--gold);font:700 8px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.08em}.drag-ghost{position:fixed!important;z-index:300!important;margin:0!important;pointer-events:none!important;opacity:.9;transform:none!important}@keyframes flash{50%{transform:translateY(-5px)}}
+    .infinity-beacon{position:absolute;z-index:10;right:-4px;top:50%;width:136px;height:164px;display:grid;place-items:center;transform:translateY(-50%);color:#666871;background:radial-gradient(circle,rgba(157,204,115,.02),transparent 68%);font:400 54px/1 Georgia,serif;transition:color .2s,text-shadow .2s,background .2s;cursor:default}.infinity-beacon::before{content:"";position:absolute;inset:17px;border:1px solid transparent;border-radius:50%;pointer-events:none}.infinity-beacon.ready{color:var(--good);text-shadow:0 0 15px rgba(157,204,115,.68);background:radial-gradient(circle,rgba(157,204,115,.12),transparent 68%);cursor:copy;animation:infinity-awake 1.15s ease both}.infinity-beacon.ready::before{border-color:rgba(157,204,115,.42);animation:infinity-ring 1.15s ease-out both}.infinity-beacon.drag-over{color:var(--ink);text-shadow:0 0 18px var(--good),0 0 48px rgba(157,204,115,.75);background:radial-gradient(circle,rgba(157,204,115,.24),transparent 70%)}
+    .control-deck{height:78px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:18px;align-items:center;padding:9px 190px 9px 24px}.rule-lab{min-width:0;display:flex;align-items:center;gap:12px}.rule-title{flex:0 0 auto;color:var(--muted);font:700 8px/1.35 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:uppercase}.rule-examples{display:flex;align-items:center;gap:7px;min-width:0;color:var(--ink);font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.example{padding:6px 8px;border-bottom:1px solid #55565c;white-space:nowrap}.rule-empty{color:var(--muted);font-weight:500}.repeat-handle{display:none;align-items:center;margin-left:auto;padding:9px 12px;border:1px solid var(--good);border-radius:999px;color:var(--good);background:transparent;cursor:grab;touch-action:none;user-select:none;font:800 9px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.07em;text-transform:uppercase}.repeat-handle.visible{display:flex;animation:repeat-awake 1.05s ease both}.repeat-handle::after{content:"  ⋯";font-size:15px}.actions{display:flex;gap:7px}.action{height:39px;padding:0 12px;border:1px solid #414249;border-radius:999px;color:var(--muted);background:transparent;cursor:pointer;font:700 9px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.07em;text-transform:uppercase}.action:hover{color:var(--ink)}.night-button{color:#17130b;border-color:var(--gold);background:var(--gold)}
+    @keyframes repeat-awake{0%{opacity:0;transform:translateY(5px);filter:drop-shadow(0 0 0 rgba(157,204,115,0))}45%{opacity:1;transform:none;filter:drop-shadow(0 0 13px rgba(157,204,115,.8))}100%{opacity:1;transform:none;filter:drop-shadow(0 0 0 rgba(157,204,115,0))}}@keyframes infinity-awake{0%{opacity:.35;transform:translateY(-50%) scale(.86)}55%{opacity:1;transform:translateY(-50%) scale(1.1)}100%{opacity:1;transform:translateY(-50%) scale(1)}}@keyframes infinity-ring{0%{opacity:0;transform:scale(.45)}45%{opacity:1}100%{opacity:.35;transform:scale(1)}}
+    .statusbar{position:absolute;z-index:20;right:26px;top:64px;display:flex;gap:14px}.condition{color:var(--muted);font:700 9px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.06em;text-transform:uppercase}.condition.good{color:var(--good)}.condition.bad{color:var(--danger)}.message{position:absolute;z-index:20;left:25px;bottom:76px;max-width:700px;color:var(--muted);font:600 10px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.message::before{content:"→";margin-right:8px;color:var(--gold)}
+    .night-check{position:fixed;inset:0;z-index:450;display:none;place-items:center;padding:28px;background:rgba(11,12,15,.94)}.night-check.visible{display:grid}.check-card{width:min(540px,100%);padding:25px;border:1px solid var(--line);background:var(--void)}.check-kicker{color:var(--gold);font:700 9px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.13em;text-transform:uppercase}.check-card h2{margin:7px 0 17px;font-size:32px;letter-spacing:-.035em}.check-list{display:grid}.check-row{display:flex;justify-content:space-between;gap:20px;padding:11px 0;border-top:1px solid #292a2f;color:var(--muted);font-size:13px}.check-row strong.pass{color:var(--good)}.check-row strong.fail{color:var(--danger)}.check-close{margin-top:20px;padding:10px 14px;border:1px solid var(--line);border-radius:999px;color:var(--ink);background:transparent;cursor:pointer}
+    .rules-trigger{border:0;background:transparent;color:var(--muted);cursor:pointer;font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.1em;text-transform:lowercase}.rules-trigger:hover{color:var(--good)}.rules-panel{position:fixed;inset:0;z-index:470;display:none;place-items:center;padding:28px;background:rgba(8,11,9,.94)}.rules-panel.visible{display:grid}.rules-card{width:min(480px,100%);padding:26px;border:1px solid var(--line);border-radius:2px;background:var(--void)}.rules-kicker{margin:0 0 7px;color:var(--good);font:600 9px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:lowercase}.rules-card h2{margin:0 0 18px;font-size:26px;letter-spacing:-.03em}.rules-list{display:grid;border-top:1px solid var(--line)}.rules-item{display:grid;grid-template-columns:32px 1fr;gap:12px;padding:13px 0;border-bottom:1px solid var(--line);color:var(--ink);font:500 12px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.rules-item span{color:var(--good)}.rules-close{margin-top:20px;padding:10px 14px;border:1px solid var(--good);border-radius:2px;color:var(--good);background:transparent;cursor:pointer;font:600 10px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.08em;text-transform:lowercase}
+    .epilogue{position:fixed;inset:0;z-index:600;display:none;place-items:center;padding:30px;background:var(--void)}body.solved .epilogue{display:grid}.epilogue-card{width:min(720px,100%);text-align:center}.sigil{margin:0 auto 22px;width:60px;height:60px;display:grid;place-items:center;border:1px solid var(--gold);border-radius:50%;color:var(--gold);font-size:24px}.solved-label{color:var(--gold);font:700 10px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.15em;text-transform:uppercase}.epilogue h2{margin:11px 0 17px;font-size:clamp(36px,7vw,66px);line-height:1;letter-spacing:-.045em}.epilogue p{margin:0 auto;max-width:600px;color:var(--muted);font-size:clamp(15px,2vw,19px);line-height:1.6}.epilogue p strong{color:var(--ink)}.next-link{display:inline-flex;margin-top:27px;padding:12px 17px;border:1px solid var(--line);border-radius:999px;color:var(--ink);font:700 10px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.08em;text-decoration:none;text-transform:uppercase}.next-link:hover{border-color:var(--blue);color:var(--blue)}
+    .sweep{position:absolute;z-index:50;left:0;top:0;bottom:0;width:70px;pointer-events:none;background:linear-gradient(90deg,transparent,rgba(157,204,115,.24),transparent);transform:translateX(-100px)}.hotel.certifying .sweep{animation:sweep 1.3s ease forwards}@keyframes sweep{to{transform:translateX(calc(100vw + 150px))}}
+    @media(max-width:820px){.brief-copy{display:none}.board{grid-template-columns:128px minmax(0,1fr);gap:14px;padding-inline:14px}.waiting-head{font-size:8px;padding-inline:9px}.control-deck{grid-template-columns:1fr;padding-inline:14px}.actions{display:none}.statusbar{display:none}.room{flex-basis:105px;height:166px}.topbar{padding-inline:14px}.chapter{display:none}.rules-trigger{font-size:9px}.seals{display:none}.night-line{grid-template-columns:1fr}.night-rule+.night-rule{border-left:0;border-top:1px solid var(--line)}.intro{padding:20px}}
+    @media(max-height:690px){.brief{height:96px;padding:8px 28px 10px}.brief h1{font-size:28px}.board{height:calc(100dvh - 226px)}.control-deck{height:76px}.room{height:156px}.room-track{padding-top:51px}.message{bottom:73px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.hotel.certifying .sweep,.room.drop-flash,.repeat-handle.visible,.infinity-beacon.ready,.infinity-beacon.ready::before{animation:none}}
+    </style>
+</head>
+<body>
+  <section class="intro" id="intro" aria-labelledby="intro-title">
+    <div class="intro-inner">
+      <p class="intro-kicker">archive://node_03</p>
+      <h1 id="intro-title">No vacancies.</h1>
+      <p class="intro-copy">Night falls. Hilbert's Hotel has infinitely many numbered rooms—and every one is occupied. Make room for yourself.</p>
+      <div class="night-line" aria-label="Rules for the night">
+        <div class="night-rule">Rule I<strong>Everyone has a room</strong></div>
+        <div class="night-rule">Rule II<strong>No room is shared</strong></div>
+        <div class="night-rule">Rule III<strong>Waiting room empty</strong></div>
+      </div>
+      <button id="intro-start" type="button">Open reception</button>
+    </div>
+  </section>
+
+  <main class="app" id="app" aria-hidden="true" inert>
+    <div class="grid" aria-hidden="true"></div>
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark"></span>The Paradox Archive</div>
+      <button class="rules-trigger" id="rules-trigger" type="button" aria-controls="rules-panel" aria-expanded="false">node_03 · [ rules ]</button>
+      <div class="seals"><span class="seal done"></span><span class="seal done"></span><span class="seal active"></span><span class="seal"></span><span class="seal"></span></div>
+    </header>
+    <section class="brief">
+      <div><p class="eyebrow">node_03 // nightfall pending</p><h1>Make room.</h1></div>
+      <blockquote class="brief-copy hilbert-quote"><p>“The infinite! No other question has ever moved so profoundly the spirit of man.”</p><cite>— David Hilbert</cite></blockquote>
+    </section>
+
+    <div class="statusbar" aria-live="polite">
+      <span class="condition bad" id="waiting-status">Waiting 1</span>
+      <span class="condition good" id="collision-status">Shared 0</span>
+      <span class="condition bad" id="rule-status">∞ uncertified</span>
+    </div>
+
+    <section class="board">
+      <aside class="waiting" id="waiting" aria-label="Waiting room drop zone">
+        <div class="waiting-head">Waiting room<span>Empty by nightfall</span></div>
+        <div class="waiting-people" id="waiting-people"></div>
+      </aside>
+      <section class="hotel" id="hotel" aria-label="A corridor that generates more numbered rooms as it is scrolled">
+        <div class="corridor" id="corridor"><div class="room-track" id="room-track"></div></div>
+        <div class="infinity-beacon" id="infinity-beacon" aria-label="Infinity target">∞</div>
+        <div class="sweep"></div>
+      </section>
+    </section>
+
+    <div class="message" id="message" aria-live="polite">Drag residents between rooms. The corridor keeps generating rooms as you travel.</div>
+
+    <section class="control-deck">
+      <div class="rule-lab">
+        <div class="rule-title">Observed<br>movement</div>
+        <div class="rule-examples" id="rule-examples"><span class="rule-empty">Create five matching moves to reveal a repeatable pattern.</span></div>
+        <button class="repeat-handle" id="repeat-handle" type="button" aria-label="Drag the repeated pattern to infinity">Repeat to infinity</button>
+      </div>
+      <div class="actions">
+        <button class="action" id="undo" type="button">Undo</button>
+        <button class="action" id="reset" type="button">Reset</button>
+        <button class="action night-button" id="nightfall" type="button">Let night fall</button>
+      </div>
+    </section>
+
+    <section class="night-check" id="night-check" aria-labelledby="check-title">
+      <div class="check-card">
+        <div class="check-kicker">Nightfall inspection</div>
+        <h2 id="check-title">Can the hotel sleep?</h2>
+        <div class="check-list" id="check-list"></div>
+        <button class="check-close" id="check-close" type="button">Return to the lobby</button>
+      </div>
+    </section>
+
+    <section class="rules-panel" id="rules-panel" aria-labelledby="rules-title" aria-hidden="true">
+      <div class="rules-card" role="dialog" aria-modal="true">
+        <p class="rules-kicker">rules://night</p>
+        <h2 id="rules-title">Rules for the night</h2>
+        <div class="rules-list"><div class="rules-item"><span>01</span>Everyone has a room</div><div class="rules-item"><span>02</span>No room is shared</div><div class="rules-item"><span>03</span>Waiting room empty</div></div>
+        <button class="rules-close" id="rules-close" type="button">Continue</button>
+      </div>
+    </section>
+  </main>
+
+  <section class="epilogue" aria-labelledby="solved-title">
+    <div class="epilogue-card">
+      <div class="sigil">III</div><div class="solved-label">Seal III broken · Hilbert's Hotel</div>
+      <h2 id="solved-title">Infinity made room.</h2>
+      <p>One rule moved every guest and left no one behind.</p>
+      <a class="next-link" href="endless-corridor.html">Open node 04 →</a>
+    </div>
+  </section>
+
+  <script>
+    (()=>{
+      const intro=document.getElementById('intro'),app=document.getElementById('app'),introStart=document.getElementById('intro-start');
+      const waitingEl=document.getElementById('waiting'),waitingPeople=document.getElementById('waiting-people'),track=document.getElementById('room-track'),corridor=document.getElementById('corridor');
+      const message=document.getElementById('message'),examplesEl=document.getElementById('rule-examples'),repeatHandle=document.getElementById('repeat-handle'),infinityBeacon=document.getElementById('infinity-beacon'),hotel=document.getElementById('hotel');
+      const waitingStatus=document.getElementById('waiting-status'),collisionStatus=document.getElementById('collision-status'),ruleStatus=document.getElementById('rule-status');
+      const undoBtn=document.getElementById('undo'),resetBtn=document.getElementById('reset'),nightfallBtn=document.getElementById('nightfall'),nightCheck=document.getElementById('night-check'),checkList=document.getElementById('check-list'),checkClose=document.getElementById('check-close');
+      const rulesTrigger=document.getElementById('rules-trigger'),rulesPanel=document.getElementById('rules-panel'),rulesClose=document.getElementById('rules-close');
+      let maxRoom=30,rooms=new Map(),positions=new Map(),waiting=new Set(['YOU']),history=[],moveExamples=[],candidateOffset=null,certifiedOffset=null,selected=null,suppressClick=false,certifying=false;
+
+      function baseOccupant(room){if(certifiedOffset!==null){const id=room-certifiedOffset;return id>0?String(id):null}return String(room)}
+      function ensureRooms(to){for(let n=1;n<=to;n++){if(!rooms.has(n)){const base=baseOccupant(n);rooms.set(n,base?[base]:[]);if(base)positions.set(base,{type:'room',room:n})}}}
+      function card(id){const b=document.createElement('button');b.type='button';b.className='person-card'+(id==='YOU'?' you':'');b.dataset.person=id;b.setAttribute('aria-label',id==='YOU'?'You, the traveler':`Resident ${id}`);b.innerHTML=`<span class="stick-head"></span><span class="stick-body"></span><span class="person-number">${id==='YOU'?'★':id}</span>`;return b}
+      function render(){
+        waitingPeople.replaceChildren(...[...waiting].map(card));waitingEl.classList.toggle('empty',waiting.size===0);
+        track.textContent='';for(let n=1;n<=maxRoom;n++){const room=document.createElement('div');room.className='room';room.dataset.room=String(n);const occupants=rooms.get(n)||[];room.classList.toggle('vacant',occupants.length===0);room.classList.toggle('collision',occupants.length>1);room.innerHTML=`<span class="room-number">${n}</span><div class="room-people"></div><span class="room-light"></span>`;room.querySelector('.room-people').append(...occupants.map(card));track.appendChild(room)}
+        renderExamples();updateStatus();
+      }
+      function collisionCount(){let count=0;for(const list of rooms.values())if(list.length>1)count+=list.length-1;return count}
+      function updateStatus(){const collisions=collisionCount();waitingStatus.textContent=`Waiting ${waiting.size}`;waitingStatus.className='condition '+(waiting.size===0?'good':'bad');collisionStatus.textContent=`Shared ${collisions}`;collisionStatus.className='condition '+(collisions===0?'good':'bad');ruleStatus.textContent=certifiedOffset!==null?'∞ certified':'∞ uncertified';ruleStatus.className='condition '+(certifiedOffset!==null?'good':'bad')}
+      function renderExamples(){examplesEl.textContent='';const recent=moveExamples.slice(-2);if(!recent.length){examplesEl.innerHTML='<span class="rule-empty">Create five matching moves to reveal a repeatable pattern.</span>'}else recent.forEach(m=>{const s=document.createElement('span');s.className='example';s.textContent=`${m.guest}: ${m.from} → ${m.to}`;examplesEl.appendChild(s)});const match=detectPattern();repeatHandle.classList.toggle('visible',match);infinityBeacon.classList.toggle('ready',match)}
+      function detectPattern(){if(moveExamples.length<5||certifiedOffset!==null){candidateOffset=null;return false}const moves=moveExamples.slice(-5),offset=moves[0].to-moves[0].from;const match=offset>0&&moves.every((m,i)=>m.to-m.from===offset&&(i===0||m.guest===String(Number(moves[i-1].guest)+1)&&m.from===moves[i-1].from+1&&m.to===moves[i-1].to+1));candidateOffset=match?offset:null;return match}
+      function snapshot(){return{rooms:[...rooms].map(([k,v])=>[k,[...v]]),positions:[...positions].map(([k,v])=>[k,{...v}]),waiting:[...waiting],moveExamples:moveExamples.map(x=>({...x})),certifiedOffset}}
+      function restore(s){rooms=new Map(s.rooms.map(([k,v])=>[k,[...v]]));positions=new Map(s.positions.map(([k,v])=>[k,{...v}]));waiting=new Set(s.waiting);moveExamples=s.moveExamples.map(x=>({...x}));certifiedOffset=s.certifiedOffset;candidateOffset=null;render()}
+      function removePerson(id){const p=positions.get(id);if(!p)return p;if(p.type==='waiting')waiting.delete(id);else{const list=rooms.get(p.room)||[];rooms.set(p.room,list.filter(x=>x!==id))}return p}
+      function movePerson(id,destination){if(certifying)return;history.push(snapshot());const from=removePerson(id);if(!from)return;if(destination.type==='waiting'){waiting.add(id);positions.set(id,{type:'waiting'})}else{ensureRooms(destination.room);rooms.get(destination.room).push(id);positions.set(id,{type:'room',room:destination.room})}
+        if(id!=='YOU'&&from.type==='room'&&destination.type==='room')moveExamples.push({guest:id,from:from.room,to:destination.room});else if(id!=='YOU')moveExamples=[];
+        const target=destination.type==='room'?destination.room:null;render();if(target){const el=track.querySelector(`[data-room="${target}"]`);if(el){el.classList.remove('drop-flash');void el.offsetWidth;el.classList.add('drop-flash')}}
+        if(id==='YOU')message.textContent=destination.type==='room'?`You entered Room ${destination.room}. The night rules still need to pass.`:'You returned to the waiting room.';else if(destination.type==='waiting')message.textContent=`Resident ${id} is waiting temporarily. The room must be empty before night.`;else if(candidateOffset!==null)message.textContent='A repeatable movement has appeared. Carry the pattern into infinity.';else message.textContent=`Resident ${id} moved. Observe the vacancies and collisions you created.`
+      }
+      function reset(){maxRoom=30;rooms=new Map();positions=new Map();waiting=new Set(['YOU']);history=[];moveExamples=[];candidateOffset=null;certifiedOffset=null;selected=null;certifying=false;positions.set('YOU',{type:'waiting'});ensureRooms(maxRoom);render();corridor.scrollLeft=0;message.textContent='Drag residents between rooms. The corridor keeps generating rooms as you travel.'}
+      function certify(){
+        if(candidateOffset===null||certifying)return;
+        certifying=true;
+        const offset=candidateOffset;
+        hotel.classList.add('certifying');
+        message.textContent='The corridor tests your movement beyond every visible room…';
+        let steps=0;
+        const timer=setInterval(()=>{
+          steps++;
+          maxRoom+=20;
+          ensureRooms(maxRoom);
+          render();
+          corridor.scrollLeft=corridor.scrollWidth;
+          if(steps>=4){
+            clearInterval(timer);
+            setTimeout(()=>{
+              certifiedOffset=offset;
+              candidateOffset=null;
+              moveExamples=[];
+              rooms=new Map();
+              positions=new Map();
+              for(let n=1;n<=maxRoom;n++){
+                const id=n-offset;
+                rooms.set(n,id>0?[String(id)]:[]);
+                if(id>0)positions.set(String(id),{type:'room',room:n});
+              }
+              positions.set('YOU',{type:'waiting'});
+              waiting=new Set(['YOU']);
+              history=[];
+              certifying=false;
+              hotel.classList.remove('certifying');
+              render();
+              corridor.scrollLeft=0;
+              message.textContent=`Pattern certified for the infinite corridor. ${offset} room${offset===1?' is':'s are'} now vacant.`;
+            },450);
+          }
+        },270);
+      }
+      function dropTarget(x,y){const el=document.elementFromPoint(x,y);const room=el&&el.closest?el.closest('.room'):null;if(room)return{type:'room',room:Number(room.dataset.room)};if(el&&(el.closest('#waiting')||el.id==='waiting'))return{type:'waiting'};if(el&&(el.closest('#infinity-beacon')||el.id==='infinity-beacon'))return{type:'infinity'};return null}
+      function startDrag(source,event,type,id){event.preventDefault();const rect=source.getBoundingClientRect(),ox=event.clientX-rect.left,oy=event.clientY-rect.top,ghost=source.cloneNode(true);ghost.removeAttribute('id');ghost.classList.add('drag-ghost');ghost.style.left=`${rect.left}px`;ghost.style.top=`${rect.top}px`;ghost.style.width=`${rect.width}px`;ghost.style.height=`${rect.height}px`;document.body.appendChild(ghost);let moved=false;
+        const move=e=>{moved=true;ghost.style.left=`${e.clientX-ox}px`;ghost.style.top=`${e.clientY-oy}px`;if(type==='repeat'){const r=infinityBeacon.getBoundingClientRect();infinityBeacon.classList.toggle('drag-over',e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom)}};const up=e=>{window.removeEventListener('pointermove',move);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);infinityBeacon.classList.remove('drag-over');const target=dropTarget(e.clientX,e.clientY);ghost.remove();suppressClick=moved;if(type==='person'&&target&&(target.type==='room'||target.type==='waiting'))movePerson(id,target);if(type==='repeat'&&target&&target.type==='infinity')certify();setTimeout(()=>suppressClick=false,0)};window.addEventListener('pointermove',move);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up)}
+      function handlePointerDown(e){const p=e.target.closest('.person-card');if(p){startDrag(p,e,'person',p.dataset.person);return}if(e.target.closest('#repeat-handle')&&candidateOffset!==null)startDrag(repeatHandle,e,'repeat','repeat')}
+      function handleClick(e){if(suppressClick)return;const p=e.target.closest('.person-card');if(p){selected=selected===p.dataset.person?null:p.dataset.person;render();const again=document.querySelector(`[data-person="${selected}"]`);if(again)again.classList.add('selected');return}const room=e.target.closest('.room');if(room&&selected){const id=selected;selected=null;movePerson(id,{type:'room',room:Number(room.dataset.room)});return}if(e.target.closest('#waiting')&&selected){const id=selected;selected=null;movePerson(id,{type:'waiting'})}}
+      function checkNight(){const collisions=collisionCount(),player=positions.get('YOU'),checks=[['Waiting room empty',waiting.size===0,waiting.size===0?'EMPTY':`${waiting.size} still waiting`],['No room shared',collisions===0,collisions===0?'CLEAR':`${collisions} collision${collisions===1?'':'s'}`],['Every move extends to infinity',certifiedOffset!==null,certifiedOffset!==null?'CERTIFIED':'LOCAL MOVES ONLY'],['You have a room',player&&player.type==='room',player&&player.type==='room'?`ROOM ${player.room}`:'NO ROOM']];checkList.textContent='';checks.forEach(([label,pass,value])=>{const row=document.createElement('div');row.className='check-row';row.innerHTML=`<span>${label}</span><strong class="${pass?'pass':'fail'}">${pass?'✓':'×'} ${value}</strong>`;checkList.appendChild(row)});const pass=checks.every(x=>x[1]);if(pass){document.body.classList.add('solved');document.title='Seal III Broken — The Paradox Archive'}else nightCheck.classList.add('visible')}
+      corridor.addEventListener('scroll',()=>{if(corridor.scrollLeft+corridor.clientWidth>corridor.scrollWidth-500&&!certifying){maxRoom+=20;ensureRooms(maxRoom);render()}});
+      document.addEventListener('pointerdown',handlePointerDown);document.addEventListener('click',handleClick);repeatHandle.addEventListener('click',()=>{if(!suppressClick&&candidateOffset!==null){message.textContent='Drag this repeated movement onto the infinity symbol.'}});
+      function showRules(){rulesPanel.classList.add('visible');rulesPanel.setAttribute('aria-hidden','false');rulesTrigger.setAttribute('aria-expanded','true');rulesClose.focus({preventScroll:true})}
+      function hideRules(){rulesPanel.classList.remove('visible');rulesPanel.setAttribute('aria-hidden','true');rulesTrigger.setAttribute('aria-expanded','false');rulesTrigger.focus({preventScroll:true})}
+      undoBtn.addEventListener('click',()=>{const s=history.pop();if(s){restore(s);message.textContent='Last movement undone.'}});resetBtn.addEventListener('click',reset);nightfallBtn.addEventListener('click',checkNight);checkClose.addEventListener('click',()=>nightCheck.classList.remove('visible'));
+      rulesTrigger.addEventListener('click',showRules);rulesClose.addEventListener('click',hideRules);rulesPanel.addEventListener('click',event=>{if(event.target===rulesPanel)hideRules()});addEventListener('keydown',event=>{if(event.key==='Escape'&&rulesPanel.classList.contains('visible'))hideRules()});
+      introStart.addEventListener('click',()=>{intro.classList.add('dismissed');app.removeAttribute('inert');app.removeAttribute('aria-hidden');setTimeout(()=>corridor.focus?.(),0)});setTimeout(()=>introStart.focus({preventScroll:true}),0);
+      reset();
+    })();
+  </script>
+  <script src="i18n.js"></script>
+</body>
+</html>

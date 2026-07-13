@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The Paradox Archive — A Mathematical Journey</title>
+  <style>
+    :root{--black:#050505;--ink:#ece9e1;--muted:#77746d;--line:#24231f;--gold:#e9b85c;--blue:#74c8ef}
+    *{box-sizing:border-box}
+    html{background:var(--black);color-scheme:dark}
+    body{margin:0;min-width:320px;min-height:100dvh;background:radial-gradient(circle at 50% 18%,rgba(116,200,239,.08),transparent 29%),radial-gradient(circle at 74% 78%,rgba(233,184,92,.055),transparent 26%),var(--black);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;overflow-x:hidden}
+    a{color:inherit}
+    .shell{width:min(1120px,calc(100% - 40px));margin:0 auto;padding:26px 0 54px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:22px;color:#8a867d;font:700 10px/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.16em;text-transform:uppercase}
+    .brand{display:flex;align-items:center;gap:11px}.brand-mark{width:9px;height:9px;border:1px solid #6f695e;transform:rotate(45deg)}
+    .status{display:flex;align-items:center;gap:9px}.status-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 13px rgba(233,184,92,.58)}
+    main{padding:clamp(80px,13vh,138px) 0 40px}
+    .intro{max-width:810px}
+    .eyebrow{margin:0 0 18px;color:var(--gold);font:700 11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase}
+    h1{max-width:800px;margin:0;font-size:clamp(52px,8.3vw,108px);font-weight:600;line-height:.89;letter-spacing:-.07em}
+    .lead{max-width:630px;margin:29px 0 0;color:#9b978f;font-size:clamp(16px,2vw,20px);line-height:1.7}
+    .journey{position:relative;margin:clamp(62px,10vh,104px) 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:chapters}
+    .journey::before{content:"";position:absolute;top:12px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,var(--gold),#34322d 22%,#34322d 78%,#1c1b18)}
+    .chapter{position:relative;padding:36px 18px 0 0;counter-increment:chapters}
+    .chapter::before{content:"";position:absolute;z-index:1;top:8px;left:0;width:9px;height:9px;border-radius:50%;border:1px solid #514e47;background:var(--black)}
+    .chapter:first-child::before{border-color:var(--gold);background:var(--gold);box-shadow:0 0 18px rgba(233,184,92,.5)}
+    .number{display:block;margin-bottom:10px;color:#4f4c46;font:700 10px/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase}.chapter:first-child .number{color:#927543}
+    .chapter-name{display:block;color:#aaa69d;font-size:clamp(14px,1.5vw,17px);line-height:1.25;font-weight:650}.chapter:first-child .chapter-name{color:var(--ink)}
+    .action-row{display:flex;align-items:center;gap:22px;margin-top:clamp(58px,9vh,92px)}
+    .begin{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 25px;border:1px solid var(--gold);border-radius:999px;background:var(--gold);color:#17120a;text-decoration:none;font-size:13px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;transition:transform .2s,box-shadow .2s}
+    .begin:hover{transform:translateY(-2px);box-shadow:0 10px 34px rgba(233,184,92,.14)}
+    .begin:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
+    .duration{color:#5f5c56;font:650 10px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.11em;text-transform:uppercase}
+    footer{display:flex;justify-content:space-between;gap:24px;margin-top:80px;padding-top:20px;border-top:1px solid #191916;color:#44423e;font:600 9px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.12em;text-transform:uppercase}
+    @media(max-width:720px){.shell{width:min(100% - 30px,600px)}.topbar .status-label{display:none}main{padding-top:80px}.journey{grid-template-columns:1fr;margin-top:58px}.journey::before{top:4px;bottom:7px;left:4px;right:auto;width:1px;height:auto;background:linear-gradient(var(--gold),#34322d 18%,#24231f 80%,#171714)}.chapter{min-height:74px;padding:0 0 24px 32px}.chapter::before{top:3px;left:0}.number{margin-bottom:4px}.action-row{align-items:flex-start;flex-direction:column;margin-top:38px;gap:14px}.begin{width:100%}footer{margin-top:58px;flex-direction:column;gap:7px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.begin{transition:none}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="topbar"><div class="brand"><span class="brand-mark" aria-hidden="true"></span>The Paradox Archive</div><div class="status"><span class="status-dot" aria-hidden="true"></span><span class="status-label">Journey ready</span></div></header>
+    <main>
+      <section class="intro" aria-labelledby="archive-title">
+        <p class="eyebrow">archive://recovery_session</p>
+        <h1 id="archive-title">PARADOX/OS</h1>
+        <p class="lead">The archive has lost its logic. Recover five mathematical nodes. Each accepts a different kind of proof.</p>
+      </section>
+      <ol class="journey" aria-label="The five chapters">
+        <li class="chapter"><span class="number">Node 01</span><span class="chapter-name">Zeno's Gate</span></li>
+        <li class="chapter"><span class="number">Node 02</span><span class="chapter-name">The Oracle's Drop</span></li>
+        <li class="chapter"><span class="number">Node 03</span><span class="chapter-name">Hilbert's Infinite Hotel</span></li>
+        <li class="chapter"><span class="number">Node 04</span><span class="chapter-name">The Endless Corridor</span></li>
+        <li class="chapter"><span class="number">Node 05</span><span class="chapter-name">The Final Question</span></li>
+      </ol>
+      <div class="action-row"><a class="begin" href="zenos-gate.html">Initialize session →</a></div>
+    </main>
+    <footer><span>paradox/os · recovery mode</span></footer>
+  </div>
+  <script src="i18n.js"></script>
+</body>
+</html>

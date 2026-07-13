@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07090f">
+  <title>The Paradox Archive — Zeno's Gate</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #f3f0e8;
+      --muted: #9d9a91;
+      --line: rgba(243, 240, 232, .16);
+      --panel: rgba(15, 18, 28, .78);
+      --acid: #d8ff62;
+      --violet: #8a78ff;
+      --void: #07090f;
+      --danger: #ff6b75;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: var(--void); }
+
+    body {
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 78% 18%, rgba(138, 120, 255, .18), transparent 34%),
+        radial-gradient(circle at 20% 86%, rgba(216, 255, 98, .08), transparent 32%),
+        var(--void);
+    }
+
+    button { font: inherit; }
+
+    .game {
+      position: relative;
+      width: 100%;
+      height: 100dvh;
+      min-height: 100%;
+      isolation: isolate;
+    }
+
+    .grid {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      opacity: .42;
+      background-image:
+        linear-gradient(var(--line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--line) 1px, transparent 1px);
+      background-size: 48px 48px;
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,.85), transparent 88%);
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.85), transparent 88%);
+    }
+
+    .orb {
+      position: absolute;
+      width: 38vw;
+      aspect-ratio: 1;
+      right: -16vw;
+      bottom: -24vw;
+      z-index: -1;
+      border: 1px solid rgba(216, 255, 98, .22);
+      border-radius: 50%;
+      box-shadow: 0 0 90px rgba(216, 255, 98, .06), inset 0 0 90px rgba(216, 255, 98, .04);
+    }
+
+    .topbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--line);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      font-size: 12px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+    .brand-mark { width: 9px; height: 9px; background: var(--acid); box-shadow: 0 0 18px var(--acid); }
+    .chapter { color: var(--muted); }
+
+    .seals { display: flex; align-items: center; gap: 8px; }
+    .seal { width: 28px; height: 3px; background: rgba(243,240,232,.18); }
+    .seal.active { background: var(--acid); box-shadow: 0 0 12px rgba(216,255,98,.6); }
+
+    .briefing {
+      position: absolute;
+      left: clamp(24px, 6vw, 86px);
+      top: clamp(92px, 15vh, 150px);
+      width: min(610px, calc(100vw - 48px));
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+    }
+
+    .eyebrow {
+      margin: 0 0 16px;
+      color: var(--acid);
+      font: 600 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 760px;
+      margin: 0;
+      font-size: clamp(42px, 7vw, 92px);
+      font-weight: 650;
+      letter-spacing: -.055em;
+      line-height: .92;
+    }
+
+    h1 em { color: var(--violet); font-style: normal; }
+
+    .mission {
+      max-width: 560px;
+      margin: 24px 0 0;
+      color: var(--muted);
+      font-size: clamp(15px, 1.6vw, 19px);
+      line-height: 1.65;
+    }
+
+    .mission strong { color: var(--ink); font-weight: 600; }
+
+    .terminal {
+      position: absolute;
+      left: clamp(24px, 6vw, 86px);
+      bottom: clamp(28px, 7vh, 72px);
+      width: min(560px, calc(100vw - 48px));
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font: 13px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      transition: opacity .25s ease;
+      pointer-events: none;
+    }
+
+    .terminal-row { display: flex; gap: 12px; }
+    .prompt { color: var(--acid); }
+    .hint { color: var(--ink); }
+
+    .space-meter {
+      position: absolute;
+      right: 28px;
+      bottom: 24px;
+      color: var(--muted);
+      font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .08em;
+      text-align: right;
+      text-transform: uppercase;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+
+    .space-meter strong { display: block; color: var(--ink); font-size: 15px; letter-spacing: .04em; }
+
+    #fleeing-button {
+      position: fixed;
+      z-index: 10;
+      left: calc(74vw - 140px);
+      top: calc(55vh - 39px);
+      width: 280px;
+      height: 78px;
+      border: 1px solid rgba(216,255,98,.55);
+      border-radius: 999px;
+      color: #11140a;
+      background: var(--acid);
+      box-shadow: 0 0 0 1px rgba(7,9,15,.45), 0 18px 60px rgba(216,255,98,.17);
+      cursor: pointer;
+      font-weight: 800;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      transition: left 130ms cubic-bezier(.2,.8,.2,1), top 130ms cubic-bezier(.2,.8,.2,1), width .2s ease, height .2s ease, border-radius .2s ease, transform .15s ease;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    #fleeing-button::after { content: " ↗"; }
+    #fleeing-button:focus-visible { outline: 3px solid var(--ink); outline-offset: 5px; }
+
+    .trail {
+      position: fixed;
+      z-index: 3;
+      width: 7px;
+      height: 7px;
+      border: 1px solid rgba(216,255,98,.45);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: vanish .7s ease forwards;
+    }
+
+    @keyframes vanish {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    body.collapsed .briefing,
+    body.collapsed .terminal,
+    body.collapsed .topbar,
+    body.collapsed .space-meter { opacity: 0; }
+
+    body.collapsed #fleeing-button {
+      left: 0 !important;
+      top: 0 !important;
+      width: 100vw;
+      height: 100dvh;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      font-size: clamp(18px, 5vw, 30px);
+    }
+
+    body.collapsed #fleeing-button::after { content: " →"; }
+
+    .epilogue {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      place-items: center;
+      overflow: auto;
+      padding: 32px;
+      background:
+        radial-gradient(circle at 50% 10%, rgba(216,255,98,.14), transparent 34%),
+        var(--void);
+    }
+
+    body.solved .epilogue { display: grid; }
+    body.solved .game > :not(.epilogue) { display: none; }
+
+    .epilogue-card { width: min(720px, 100%); text-align: center; }
+    .sigil { margin: 0 auto 26px; width: 74px; height: 74px; display: grid; place-items: center; border: 1px solid var(--acid); border-radius: 50%; color: var(--acid); font-size: 30px; box-shadow: 0 0 40px rgba(216,255,98,.13); }
+    .solved-label { color: var(--acid); font: 700 12px/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .18em; text-transform: uppercase; }
+    .epilogue h2 { margin: 12px 0 18px; font-size: clamp(36px, 7vw, 72px); line-height: 1; letter-spacing: -.045em; }
+    .epilogue p { margin: 0 auto; max-width: 580px; color: var(--muted); font-size: clamp(16px, 2vw, 20px); line-height: 1.65; }
+    .epilogue p strong { color: var(--ink); }
+    .next-seal { display: inline-flex; align-items: center; gap: 10px; margin-top: 34px; padding: 13px 18px; border: 1px solid var(--line); border-radius: 999px; color: var(--ink); font: 12px/1 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; transition: border-color .2s ease, color .2s ease; }
+    .next-seal:hover { border-color: var(--acid); color: var(--acid); }
+
+    @media (max-width: 760px) {
+      .topbar { padding: 18px 20px; }
+      .chapter { display: none; }
+      .briefing { top: 88px; }
+      .terminal { bottom: 80px; }
+      .space-meter { right: 20px; bottom: 18px; }
+      #fleeing-button { width: 250px; height: 72px; }
+    }
+
+    @media (max-height: 620px) and (min-width: 521px) {
+      .briefing { top: 86px; }
+      h1 { font-size: clamp(38px, 9vh, 64px); }
+      .mission { margin-top: 14px; font-size: 14px; }
+      .terminal { bottom: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #fleeing-button, .briefing, .terminal, .topbar, .space-meter { transition: none; }
+      .trail { animation: none; opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="game" aria-labelledby="game-title">
+    <div class="grid" aria-hidden="true"></div>
+    <div class="orb" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span> The Paradox Archive</div>
+      <div class="chapter">Chapter 01 · Zeno's Gate</div>
+      <div class="seals" aria-label="One of five seals active">
+        <span class="seal active"></span><span class="seal"></span><span class="seal"></span><span class="seal"></span><span class="seal"></span>
+      </div>
+    </header>
+
+    <section class="briefing">
+      <p class="eyebrow">Incoming transmission · Archive node 01</p>
+      <h1 id="game-title">Catch what <em>cannot</em> be caught.</h1>
+      <p class="mission"><strong>Five impossible seals</strong> protect the Last Theorem. Break them before the Paradox Archive erases itself. The first gate belongs to Zeno.</p>
+    </section>
+
+    <div class="terminal" aria-live="polite">
+      <div class="terminal-row"><span class="prompt">&gt;</span><span>Every approach leaves it space to escape.</span></div>
+      <div class="terminal-row"><span class="prompt">&gt;</span><span class="hint" id="hint">Catch the gate to enter the Archive.</span></div>
+    </div>
+
+    <div class="space-meter" aria-live="polite">Space available<strong id="space-value">—</strong></div>
+
+    <button id="fleeing-button" type="button" aria-describedby="hint">Start the riddle</button>
+
+    <section class="epilogue" aria-labelledby="solved-title">
+      <div class="epilogue-card">
+        <div class="sigil" aria-hidden="true">I</div>
+        <div class="solved-label">Seal I broken · Zeno's Gate</div>
+        <h2 id="solved-title">You did not catch it.<br>You removed infinity.</h2>
+        <p>The gate could always take another step—until there was no space left for a step. <strong>You changed the geometry of the problem instead of running faster.</strong></p>
+        <a class="next-seal" href="hilberts-hotel.html">Enter chapter II · Hilbert's Infinite Hotel →</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const button = document.getElementById('fleeing-button');
+      const hint = document.getElementById('hint');
+      const spaceValue = document.getElementById('space-value');
+      const LOCK_WIDTH = 520;
+      const LOCK_HEIGHT = 340;
+      const MARGIN = 18;
+      const TRIGGER_DISTANCE = 190;
+      let escapes = 0;
+      let solved = false;
+      let lastPointer = { x: innerWidth / 2, y: innerHeight / 2 };
+
+      function dimensions() {
+        const rect = button.getBoundingClientRect();
+        return { width: rect.width, height: rect.height };
+      }
+
+      function isCollapsed() {
+        return innerWidth <= LOCK_WIDTH && innerHeight <= LOCK_HEIGHT;
+      }
+
+      function updateSpace() {
+        if (solved) return;
+        const size = dimensions();
+        const freeWidth = Math.max(0, innerWidth - size.width);
+        const freeHeight = Math.max(0, innerHeight - size.height);
+        const area = Math.round(freeWidth * freeHeight);
+        spaceValue.textContent = `${area.toLocaleString('en-US')} px²`;
+
+        const collapsed = isCollapsed();
+        document.body.classList.toggle('collapsed', collapsed);
+        button.textContent = collapsed ? 'Zeno has nowhere to run' : 'Start the riddle';
+
+        if (collapsed) {
+          hint.textContent = 'Space collapsed. The gate is finally within reach.';
+        } else if (escapes >= 6) {
+          hint.textContent = 'Zeno is not faster than you. He simply has too much space.';
+        } else if (escapes >= 3) {
+          hint.textContent = 'Think like a geometer: change the space, not your speed.';
+        }
+      }
+
+      function clampButton() {
+        if (isCollapsed() || solved) return;
+        const size = dimensions();
+        const maxX = Math.max(MARGIN, innerWidth - size.width - MARGIN);
+        const maxY = Math.max(MARGIN, innerHeight - size.height - MARGIN);
+        const rect = button.getBoundingClientRect();
+        button.style.left = `${Math.min(maxX, Math.max(MARGIN, rect.left))}px`;
+        button.style.top = `${Math.min(maxY, Math.max(MARGIN, rect.top))}px`;
+      }
+
+      function leaveTrail(x, y) {
+        const dot = document.createElement('span');
+        dot.className = 'trail';
+        dot.style.left = `${x}px`;
+        dot.style.top = `${y}px`;
+        document.body.appendChild(dot);
+        dot.addEventListener('animationend', () => dot.remove(), { once: true });
+        setTimeout(() => dot.remove(), 900);
+      }
+
+      function escapeFrom(pointerX, pointerY) {
+        if (isCollapsed() || solved) return;
+        const size = dimensions();
+        const maxX = Math.max(MARGIN, innerWidth - size.width - MARGIN);
+        const maxY = Math.max(MARGIN, innerHeight - size.height - MARGIN);
+        const oldRect = button.getBoundingClientRect();
+        let best = { x: oldRect.left, y: oldRect.top, score: -Infinity };
+
+        for (let i = 0; i < 18; i += 1) {
+          const x = MARGIN + Math.random() * Math.max(0, maxX - MARGIN);
+          const y = MARGIN + Math.random() * Math.max(0, maxY - MARGIN);
+          const centerX = x + size.width / 2;
+          const centerY = y + size.height / 2;
+          const distance = Math.hypot(centerX - pointerX, centerY - pointerY);
+          const travel = Math.hypot(x - oldRect.left, y - oldRect.top);
+          const score = distance + Math.min(travel, 260) * .3;
+          if (score > best.score) best = { x, y, score };
+        }
+
+        leaveTrail(oldRect.left + oldRect.width / 2, oldRect.top + oldRect.height / 2);
+        button.style.left = `${best.x}px`;
+        button.style.top = `${best.y}px`;
+        escapes += 1;
+        updateSpace();
+      }
+
+      function handlePointer(event) {
+        lastPointer = { x: event.clientX, y: event.clientY };
+        if (isCollapsed() || solved) return;
+        const rect = button.getBoundingClientRect();
+        const nearestX = Math.max(rect.left, Math.min(event.clientX, rect.right));
+        const nearestY = Math.max(rect.top, Math.min(event.clientY, rect.bottom));
+        const distance = Math.hypot(event.clientX - nearestX, event.clientY - nearestY);
+        if (distance < TRIGGER_DISTANCE) escapeFrom(event.clientX, event.clientY);
+      }
+
+      button.addEventListener('pointerdown', (event) => {
+        if (!isCollapsed()) {
+          event.preventDefault();
+          escapeFrom(event.clientX || lastPointer.x, event.clientY || lastPointer.y);
+        }
+      });
+
+      button.addEventListener('click', (event) => {
+        if (!isCollapsed()) {
+          event.preventDefault();
+          escapeFrom(lastPointer.x, lastPointer.y);
+          return;
+        }
+        solved = true;
+        document.body.classList.remove('collapsed');
+        document.body.classList.add('solved');
+        document.title = 'Seal I Broken — The Paradox Archive';
+      });
+
+      document.addEventListener('pointermove', handlePointer, { passive: true });
+      window.addEventListener('resize', () => {
+        updateSpace();
+        clampButton();
+      });
+
+      updateSpace();
+      clampButton();
+    })();
+  </script>
+</body>
+</html>

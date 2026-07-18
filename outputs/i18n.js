@@ -206,7 +206,7 @@
     'power-relay.html':{en:['the first door opened behind you','power died beneath the archive','something sealed the final chamber'],de:['die erste tür öffnete sich hinter dir','unter dem archiv erlosch der strom','etwas versiegelte die letzte kammer']},
     'the-final-question.html':{en:['the current is flowing again','the archive recognizes its traveller','one question survived the darkness'],de:['der strom fließt wieder','das archiv erkennt seinen reisenden','eine frage überlebte die dunkelheit']}
   };
-  const fileName=url=>decodeURIComponent(new URL(url,location.href).pathname.split('/').pop());
+  const fileName=url=>{let name=decodeURIComponent(new URL(url,location.href).pathname.split('/').pop());if(name&&!name.includes('.'))name+='.html';return name};
   const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
   async function streamTransition(href,target){
     if(document.getElementById('pa-transition'))return;

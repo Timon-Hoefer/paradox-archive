@@ -41,7 +41,7 @@
 
       function layout(){
         dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);canvas.style.width=`${innerWidth}px`;canvas.style.height=`${innerHeight}px`;ctx.setTransform(dpr,0,0,dpr,0,0);
-        const signalWidth=Math.min(innerWidth,innerHeight)*.06,signalHeight=signalWidth*7/11;
+        const signalWidth=Math.max(4,Math.min(10,Math.min(innerWidth,innerHeight)*.008)),signalHeight=signalWidth*7/11;
         signalBox={x:Math.max(signalWidth,Math.min(innerWidth-signalWidth*2,innerWidth*.19)),y:Math.max(signalHeight*3,Math.min(innerHeight-signalHeight*4,innerHeight*.59)),w:signalWidth,h:signalHeight};draw();
       }
       function draw(){

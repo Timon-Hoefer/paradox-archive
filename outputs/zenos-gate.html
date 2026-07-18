@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#07090f">
-  <meta name="description" content="A visual journey through five mathematical riddles. Observe the room, infer its rules, and find the hidden way forward.">
+  <meta name="description" content="A visual journey through four mathematical riddles. Observe the room, infer its rules, and find the hidden way forward.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="The Paradox Archive">
-  <meta property="og:description" content="A visual journey through five mathematical riddles.">
+  <meta property="og:description" content="A visual journey through four mathematical riddles.">
   <title>The Paradox Archive — Zeno's Gate</title>
   <style>
     :root {
@@ -158,6 +158,24 @@
 
     .space-meter strong { display: block; color: var(--ink); font-size: 15px; letter-spacing: .04em; }
 
+    .start-note {
+      position: fixed;
+      z-index: 4;
+      left: 50%;
+      top: calc(50% - 112px);
+      width: min(520px, calc(100vw - 40px));
+      margin: 0;
+      color: var(--muted);
+      font: 600 11px/1.7 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: .12em;
+      text-align: center;
+      text-transform: uppercase;
+      transform: translateX(-50%);
+      opacity: .62;
+      pointer-events: none;
+      transition: opacity .25s ease;
+    }
+
     #fleeing-button {
       position: fixed;
       z-index: 10;
@@ -193,16 +211,49 @@
       animation: vanish .7s ease forwards;
     }
 
+    .cat-runner {
+      --cat-run: 0px;
+      position: fixed;
+      z-index: 9;
+      width: 52px;
+      height: 32px;
+      color: var(--acid);
+      pointer-events: none;
+      filter: drop-shadow(0 0 7px rgba(216,255,98,.28));
+      animation: cat-dash 2.7s cubic-bezier(.22,.66,.34,1) forwards;
+    }
+
+    .cat-shape { position: absolute; inset: 0; transform-origin: center; }
+    .cat-runner.reverse .cat-shape { transform: scaleX(-1); }
+    .cat-body { position: absolute; left: 12px; top: 9px; width: 29px; height: 14px; border: 1px solid currentColor; border-radius: 55% 48% 45% 52%; background: var(--void); }
+    .cat-head { position: absolute; left: 36px; top: 5px; width: 14px; height: 15px; border: 1px solid currentColor; border-radius: 45% 45% 50% 50%; background: var(--void); }
+    .cat-head::before { content: "^  ^"; position: absolute; left: -1px; top: -9px; color: currentColor; font: 8px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; letter-spacing: 1px; white-space: nowrap; }
+    .cat-head::after { content: "··"; position: absolute; left: 3px; top: 3px; color: currentColor; font: 7px/1 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; letter-spacing: 2px; }
+    .cat-tail { position: absolute; left: 1px; top: 4px; width: 15px; height: 15px; border-top: 1px solid currentColor; border-left: 1px solid currentColor; border-radius: 70% 0 0; transform: rotate(-18deg); }
+    .cat-leg { position: absolute; top: 21px; width: 9px; height: 7px; border-left: 1px solid currentColor; border-bottom: 1px solid currentColor; transform-origin: top left; }
+    .cat-leg.a { left: 17px; animation: cat-paw .24s ease-in-out infinite alternate; }
+    .cat-leg.b { left: 32px; animation: cat-paw .24s ease-in-out infinite alternate-reverse; }
+
     @keyframes vanish {
       to { transform: scale(4); opacity: 0; }
     }
 
-    body.collapsed .briefing,
-    body.collapsed .terminal,
-    body.collapsed .topbar,
-    body.collapsed .space-meter { opacity: 0; }
+    @keyframes cat-dash {
+      0% { opacity: 0; transform: translate(-50%,-50%) translateX(0); }
+      7% { opacity: .82; }
+      88% { opacity: .72; }
+      100% { opacity: 0; transform: translate(-50%,-50%) translateX(var(--cat-run)); }
+    }
 
-    body.collapsed #fleeing-button {
+    @keyframes cat-paw { from { transform: rotate(24deg); } to { transform: rotate(-28deg); } }
+
+    body.s-1 .briefing,
+    body.s-1 .terminal,
+    body.s-1 .start-note,
+    body.s-1 .topbar,
+    body.s-1 .space-meter { opacity: 0; }
+
+    body.s-1 #fleeing-button {
       left: 0 !important;
       top: 0 !important;
       width: 100vw;
@@ -213,7 +264,7 @@
       font-size: clamp(18px, 5vw, 30px);
     }
 
-    body.collapsed #fleeing-button::after { content: none; }
+    body.s-1 #fleeing-button::after { content: none; }
 
     .epilogue {
       position: fixed;
@@ -228,8 +279,8 @@
         var(--void);
     }
 
-    body.solved .epilogue { display: grid; }
-    body.solved .game > :not(.epilogue) { display: none; }
+    body.s-2 .epilogue { display: grid; }
+    body.s-2 .game > :not(.epilogue) { display: none; }
 
     .epilogue-card { width: min(720px, 100%); text-align: center; }
     .sigil { margin: 0 auto 26px; width: 74px; height: 74px; display: grid; place-items: center; border: 1px solid var(--acid); border-radius: 50%; color: var(--acid); font-size: 30px; box-shadow: 0 0 40px rgba(216,255,98,.13); }
@@ -258,12 +309,13 @@
 
     @media (prefers-reduced-motion: reduce) {
       #fleeing-button, .briefing, .terminal, .topbar, .space-meter { transition: none; }
-      .trail { animation: none; opacity: 0; }
+      .trail, .cat-runner { animation: none; opacity: 0; }
     }
   </style>
 </head>
 <body>
   <main class="game" aria-label="Zeno's Gate">
+    <p class="start-note">Four visual riddles. No instructions. No prior knowledge required.</p>
     <button id="fleeing-button" type="button">Start Journey</button>
 
     <section class="epilogue" aria-labelledby="solved-title">
@@ -277,126 +329,7 @@
     </section>
   </main>
 
-  <script>
-    (() => {
-      const button = document.getElementById('fleeing-button');
-      const LOCK_WIDTH = 520;
-      const LOCK_HEIGHT = 340;
-      const MARGIN = 18;
-      const TRIGGER_DISTANCE = 190;
-      let escapes = 0;
-      let solved = false;
-      let lastPointer = { x: innerWidth / 2, y: innerHeight / 2 };
-
-      function dimensions() {
-        const rect = button.getBoundingClientRect();
-        return { width: rect.width, height: rect.height };
-      }
-
-      function isCollapsed() {
-        const compactWindow = innerWidth <= LOCK_WIDTH && innerHeight <= LOCK_HEIGHT;
-        const phoneLandscape = innerWidth > innerHeight && innerWidth <= 960 && innerHeight <= 440;
-        return compactWindow || phoneLandscape;
-      }
-
-      function updateSpace() {
-        if (solved) return;
-        const collapsed = isCollapsed();
-        document.body.classList.toggle('collapsed', collapsed);
-      }
-
-      function clampButton() {
-        if (isCollapsed() || solved) return;
-        const size = dimensions();
-        const maxX = Math.max(MARGIN, innerWidth - size.width - MARGIN);
-        const maxY = Math.max(MARGIN, innerHeight - size.height - MARGIN);
-        const rect = button.getBoundingClientRect();
-        button.style.left = `${Math.min(maxX, Math.max(MARGIN, rect.left))}px`;
-        button.style.top = `${Math.min(maxY, Math.max(MARGIN, rect.top))}px`;
-      }
-
-      function leaveTrail(x, y) {
-        const dot = document.createElement('span');
-        dot.className = 'trail';
-        dot.style.left = `${x}px`;
-        dot.style.top = `${y}px`;
-        document.body.appendChild(dot);
-        dot.addEventListener('animationend', () => dot.remove(), { once: true });
-        setTimeout(() => dot.remove(), 900);
-      }
-
-      function escapeFrom(pointerX, pointerY) {
-        if (isCollapsed() || solved) return;
-        const size = dimensions();
-        const maxX = Math.max(MARGIN, innerWidth - size.width - MARGIN);
-        const maxY = Math.max(MARGIN, innerHeight - size.height - MARGIN);
-        const oldRect = button.getBoundingClientRect();
-        let best = { x: oldRect.left, y: oldRect.top, score: -Infinity };
-
-        for (let i = 0; i < 18; i += 1) {
-          const x = MARGIN + Math.random() * Math.max(0, maxX - MARGIN);
-          const y = MARGIN + Math.random() * Math.max(0, maxY - MARGIN);
-          const centerX = x + size.width / 2;
-          const centerY = y + size.height / 2;
-          const distance = Math.hypot(centerX - pointerX, centerY - pointerY);
-          const travel = Math.hypot(x - oldRect.left, y - oldRect.top);
-          const score = distance + Math.min(travel, 260) * .3;
-          if (score > best.score) best = { x, y, score };
-        }
-
-        leaveTrail(oldRect.left + oldRect.width / 2, oldRect.top + oldRect.height / 2);
-        button.style.left = `${best.x}px`;
-        button.style.top = `${best.y}px`;
-        escapes += 1;
-        updateSpace();
-      }
-
-      function handlePointer(event) {
-        lastPointer = { x: event.clientX, y: event.clientY };
-        if (isCollapsed() || solved) return;
-        const rect = button.getBoundingClientRect();
-        const nearestX = Math.max(rect.left, Math.min(event.clientX, rect.right));
-        const nearestY = Math.max(rect.top, Math.min(event.clientY, rect.bottom));
-        const distance = Math.hypot(event.clientX - nearestX, event.clientY - nearestY);
-        if (distance < TRIGGER_DISTANCE) escapeFrom(event.clientX, event.clientY);
-      }
-
-      button.addEventListener('pointerdown', (event) => {
-        if (!isCollapsed()) {
-          event.preventDefault();
-          escapeFrom(event.clientX || lastPointer.x, event.clientY || lastPointer.y);
-        }
-      });
-
-      button.addEventListener('click', async (event) => {
-        if (!isCollapsed()) {
-          event.preventDefault();
-          escapeFrom(lastPointer.x, lastPointer.y);
-          return;
-        }
-        solved = true;
-        document.body.classList.remove('collapsed');
-        document.body.classList.add('solved');
-        document.title = 'Seal I Broken — The Paradox Archive';
-        try {
-          await fetch('/api/reset-session', {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: { Accept: 'application/json' }
-          });
-        } catch {}
-      });
-
-      document.addEventListener('pointermove', handlePointer, { passive: true });
-      window.addEventListener('resize', () => {
-        updateSpace();
-        clampButton();
-      });
-
-      updateSpace();
-      clampButton();
-    })();
-  </script>
+  <script src="runtime-a1.min.js"></script>
   <script src="i18n.js"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Chapter IV — The Endless Corridor</title>
+  <title>Chapter III — The Endless Corridor</title>
   <style>
     :root{--void:#070912;--ink:#f3f0e8;--muted:#8f92a3;--line:rgba(243,240,232,.14);--blue:#69c8ff;--gold:#ffcb66;--danger:#ff6978}
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--void);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{min-height:100dvh;overflow:hidden;background:radial-gradient(circle at 50% 40%,rgba(105,200,255,.06),transparent 38%),var(--void)}button{font:inherit}
@@ -21,7 +21,7 @@
 <body>
   <section class="intro" id="intro" aria-labelledby="intro-title">
     <div class="intro-inner">
-      <p class="kicker">archive://node_04</p>
+      <p class="kicker">archive://node_03</p>
       <h1 id="intro-title">Find the exit.</h1>
       <p class="intro-copy">Each door creates another room. The archive records every step.</p>
       <button class="start" id="start" type="button">Enter</button>
@@ -29,7 +29,7 @@
   </section>
 
   <main class="app" id="app" aria-hidden="true" inert>
-    <header class="topbar"><div class="brand"><span class="brand-mark"></span>The Paradox Archive</div><div class="chapter">Chapter 04 · The Endless Corridor</div><div class="seals"><span class="seal done"></span><span class="seal done"></span><span class="seal done"></span><span class="seal active"></span><span class="seal"></span></div></header>
+    <header class="topbar"><div class="brand"><span class="brand-mark"></span>The Paradox Archive</div><div class="chapter">Chapter 03 · The Endless Corridor</div><div class="seals"><span class="seal done"></span><span class="seal done"></span><span class="seal active"></span><span class="seal"></span><span class="seal"></span></div></header>
     <section class="scene" id="scene" aria-label="An apparently endless corridor">
       <div class="wall left"></div><div class="wall right"></div><div class="ceiling"></div><div class="floor"></div><div class="vanish"></div>
       <span class="room-id" id="room-id">Room 00</span>
@@ -40,24 +40,24 @@
     </section>
   </main>
 
-  <section class="epilogue" aria-labelledby="solved-title"><div class="epilogue-inner"><div class="epilogue-label">node_04 // inverse path restored</div><h2 id="solved-title">Backward erased the maze.</h2><p>The last room entered was the first one left.</p><a class="next-link" href="the-final-question.html">Open final query →</a></div></section>
+  <section class="epilogue" aria-labelledby="solved-title"><div class="epilogue-inner"><div class="epilogue-label">node_03 // inverse path restored</div><h2 id="solved-title">Backward erased the maze.</h2><p>The last room entered was the first one left.</p><a class="next-link" href="power-relay.html">Open node 04 →</a></div></section>
 
   <script>
     (()=>{
-      const LETTERS='GOBACKWARDS',GOAL=LETTERS.length;
+      const token=String.fromCharCode(71,79,66,65,67,75,87,65,82,68,83),limit=token.length;
       const intro=document.getElementById('intro'),start=document.getElementById('start'),app=document.getElementById('app'),scene=document.getElementById('scene'),door=document.getElementById('door'),doorGlyph=document.getElementById('door-glyph'),roomId=document.getElementById('room-id'),roomTitle=document.getElementById('room-title'),footprints=document.getElementById('footprints'),escape=document.getElementById('escape'),leave=document.getElementById('leave');
       let room=0,maxReached=0,retreating=false,started=false,exitRevealed=false,exitTimer=0;
       const partial=raw=>raw.length>2?`${raw.slice(0,2)} ${raw.slice(2)}`:raw;
-      const phrase=n=>{const complete=Math.floor(n/GOAL),rest=n%GOAL,parts=Array.from({length:complete},()=>partial(LETTERS));if(rest)parts.push(partial(LETTERS.slice(0,rest)));return parts.slice(-3).join(' · ')};
+      const phrase=n=>{const complete=Math.floor(n/limit),rest=n%limit,parts=Array.from({length:complete},()=>partial(token));if(rest)parts.push(partial(token.slice(0,rest)));return parts.slice(-3).join(' · ')};
       const roman=n=>{const values=[[10,'X'],[9,'IX'],[5,'V'],[4,'IV'],[1,'I']];let out='';for(const[v,s]of values)while(n>=v){out+=s;n-=v}return out||'I'};
-      function setTitle(){document.title=room===0&&!maxReached?'Chapter IV — The Endless Corridor':phrase(maxReached||room)}
+      function setTitle(){document.title=room===0&&!maxReached?'Chapter III — The Endless Corridor':phrase(maxReached||room)}
       function render(fromHistory=false){
         roomId.textContent=`Room ${String(room+1).padStart(2,'0')}`;
-        roomTitle.textContent=room===0?'The first threshold':room>=GOAL?'The corridor continues':`The ${roman(room+1)} chamber`;
+        roomTitle.textContent=room===0?'The first threshold':room>=limit?'The corridor continues':`The ${roman(room+1)} chamber`;
         doorGlyph.textContent=roman((room%10)+1);
         footprints.replaceChildren();
         if(retreating){for(let i=0;i<Math.min(maxReached-room,11);i++){const mark=document.createElement('span');mark.className='footprint';footprints.appendChild(mark)}}
-        const atExit=retreating&&room===0&&maxReached>=GOAL;
+        const atExit=retreating&&room===0&&maxReached>=limit;
         if(atExit&&!exitRevealed){
           exitRevealed=true;
           scene.classList.remove('step');
@@ -73,10 +73,10 @@
       function advance(){
         room++;
         maxReached=Math.max(maxReached,room);
-        if(room<=GOAL){
+        if(room<=limit){
           history.pushState({corridor:true,room},'',`#room-${room}`);
         }else{
-          history.replaceState({corridor:true,room:GOAL,visualRoom:room},'',`#room-${room}`);
+          history.replaceState({corridor:true,room:limit,visualRoom:room},'',`#room-${room}`);
         }
         scene.classList.remove('step');void scene.offsetWidth;scene.classList.add('step');
         render();
@@ -85,8 +85,8 @@
       history.pushState({corridor:true,room:0},'', '#room-0');
       start.addEventListener('click',()=>{started=true;intro.classList.add('hidden');app.removeAttribute('inert');app.removeAttribute('aria-hidden');door.focus({preventScroll:true});render()});
       door.addEventListener('click',advance);
-      window.addEventListener('popstate',event=>{if(!started||!event.state?.corridor)return;retreating=true;room=Number(event.state.room)||0;if(event.state.guard&&maxReached>=GOAL)history.pushState({corridor:true,room:0,exitProtected:true},'', '#room-0');render(true)});
-      leave.addEventListener('click',()=>{document.body.classList.add('solved');document.title='Seal IV Broken — The Paradox Archive'});
+      window.addEventListener('popstate',event=>{if(!started||!event.state?.corridor)return;retreating=true;room=Number(event.state.room)||0;if(event.state.guard&&maxReached>=limit)history.pushState({corridor:true,room:0,exitProtected:true},'', '#room-0');render(true)});
+      leave.addEventListener('click',()=>{document.body.classList.add('solved');document.title='Seal III Broken — The Paradox Archive'});
       setTimeout(()=>start.focus({preventScroll:true}),0);
     })();
   </script>

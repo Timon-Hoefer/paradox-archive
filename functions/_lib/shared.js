@@ -1,6 +1,6 @@
 const encoder = new TextEncoder();
 const SESSION_COOKIE = 'pa_session';
-const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
+const SESSION_MAX_AGE_SECONDS = 100 * 24 * 60 * 60;
 
 export function json(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
@@ -10,6 +10,13 @@ export function json(data, status = 200, headers = {}) {
       'Cache-Control': 'no-store, max-age=0',
       'X-Content-Type-Options': 'nosniff',
       'Referrer-Policy': 'no-referrer',
+      'X-Frame-Options': 'DENY',
+      'X-Permitted-Cross-Domain-Policies': 'none',
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+      'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
+      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Resource-Policy': 'same-origin',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
       ...headers
     }
   });
@@ -17,12 +24,92 @@ export function json(data, status = 200, headers = {}) {
 
 export function sameOrigin(request) {
   const origin = request.headers.get('Origin');
-  return !origin || origin === new URL(request.url).origin;
+  if (origin) return origin === new URL(request.url).origin;
+  return request.headers.get('Sec-Fetch-Site') === 'same-origin';
 }
 
-export function bodyIsSmallEnough(request, maximum = 2048) {
-  const length = Number(request.headers.get('Content-Length') || 0);
-  return Number.isFinite(length) && length <= maximum;
+export async function readJsonBody(request, maximum = 2048) {
+  const contentType = request.headers.get('Content-Type') || '';
+  if (!/^application\/json(?:\s*;|$)/i.test(contentType)) {
+    return { response: json({ error: 'unsupported_media_type' }, 415) };
+  }
+
+  const encoding = (request.headers.get('Content-Encoding') || 'identity').trim().toLowerCase();
+  if (encoding !== 'identity') {
+    return { response: json({ error: 'unsupported_content_encoding' }, 415) };
+  }
+
+  const declaredLength = request.headers.get('Content-Length');
+  if (declaredLength !== null) {
+    const length = Number(declaredLength);
+    if (!Number.isFinite(length) || length < 0) {
+      return { response: json({ error: 'invalid_content_length' }, 400) };
+    }
+    if (length > maximum) return { response: json({ error: 'request_too_large' }, 413) };
+  }
+
+  if (!request.body) return { response: json({ error: 'invalid_json' }, 400) };
+  const reader = request.body.getReader();
+  const chunks = [];
+  let total = 0;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maximum) {
+        await reader.cancel();
+        return { response: json({ error: 'request_too_large' }, 413) };
+      }
+      chunks.push(value);
+    }
+  } catch {
+    return { response: json({ error: 'invalid_body' }, 400) };
+  }
+
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  try {
+    return { value: JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes)) };
+  } catch {
+    return { response: json({ error: 'invalid_json' }, 400) };
+  }
+}
+
+export function methodNotAllowed(allowed) {
+  return json({ error: 'method_not_allowed' }, 405, { Allow: allowed.join(', ') });
+}
+
+export async function consumeRateLimit(database, rateKey, nowSeconds, windowSeconds, maximum) {
+  const row = await database
+    .prepare(`INSERT INTO rate_limits (rate_key, window_started, attempts)
+              VALUES (?, ?, 1)
+              ON CONFLICT(rate_key) DO UPDATE SET
+                window_started = CASE
+                  WHEN excluded.window_started - rate_limits.window_started >= ?
+                  THEN excluded.window_started
+                  ELSE rate_limits.window_started
+                END,
+                attempts = CASE
+                  WHEN excluded.window_started - rate_limits.window_started >= ?
+                  THEN 1
+                  ELSE MIN(rate_limits.attempts + 1, ?)
+                END
+              RETURNING window_started, attempts`)
+    .bind(rateKey, nowSeconds, windowSeconds, windowSeconds, maximum + 1)
+    .first();
+
+  const attempts = Number(row?.attempts || maximum + 1);
+  const windowStarted = Number(row?.window_started || nowSeconds);
+  return {
+    allowed: attempts <= maximum,
+    retryAfter: attempts <= maximum ? 0 : Math.max(1, windowSeconds - (nowSeconds - windowStarted))
+  };
 }
 
 export function getSessionId(request) {
@@ -88,13 +175,13 @@ export function completionContent(answer) {
   return {
     en: {
       headline: answer,
-      completion: 'Session complete.',
+      completion: 'The archive was never broken. It erased its own proof and waited for you to rebuild it.',
       factLabel: 'Did you know?',
       fact: `In The Hitchhiker's Guide to the Galaxy, the supercomputer Deep Thought produces ${answer} as the answer to the Ultimate Question of life, the universe, and everything.`
     },
     de: {
       headline: answer,
-      completion: 'Sitzung abgeschlossen.',
+      completion: 'Das Archiv war nie beschädigt. Es löschte seinen eigenen Beweis und wartete darauf, dass du ihn neu erschaffst.',
       factLabel: 'Wusstest du?',
       fact: `In Per Anhalter durch die Galaxis gibt der Supercomputer Deep Thought die Zahl ${answer} als Antwort auf die ultimative Frage nach dem Leben, dem Universum und dem ganzen Rest aus.`
     }
@@ -102,16 +189,16 @@ export function completionContent(answer) {
 }
 
 export function clientIp(request) {
-  return (
-    request.headers.get('CF-Connecting-IP') ||
-    request.headers.get('X-Forwarded-For')?.split(',')[0]?.trim() ||
-    'local-development'
-  );
+  return request.headers.get('CF-Connecting-IP') || 'unavailable';
 }
 
 export function normalizeEntry(value) {
   return typeof value === 'string'
-    ? value.normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim()
+    ? value
+        .normalize('NFKC')
+        .replace(/[\u0000-\u001f\u007f\u202a-\u202e\u2066-\u2069]/gi, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
     : '';
 }
 

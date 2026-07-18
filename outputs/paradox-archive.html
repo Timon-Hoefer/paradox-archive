@@ -19,7 +19,7 @@
     .eyebrow{margin:0 0 18px;color:var(--gold);font:700 11px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.2em;text-transform:uppercase}
     h1{max-width:800px;margin:0;font-size:clamp(52px,8.3vw,108px);font-weight:600;line-height:.89;letter-spacing:-.07em}
     .lead{max-width:630px;margin:29px 0 0;color:#9b978f;font-size:clamp(16px,2vw,20px);line-height:1.7}
-    .journey{position:relative;margin:clamp(62px,10vh,104px) 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));counter-reset:chapters}
+    .journey{position:relative;margin:clamp(62px,10vh,104px) 0 0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));counter-reset:chapters}
     .journey::before{content:"";position:absolute;top:12px;left:10%;right:10%;height:1px;background:linear-gradient(90deg,var(--gold),#34322d 22%,#34322d 78%,#1c1b18)}
     .chapter{position:relative;padding:36px 18px 0 0;counter-increment:chapters}
     .chapter::before{content:"";position:absolute;z-index:1;top:8px;left:0;width:9px;height:9px;border-radius:50%;border:1px solid #514e47;background:var(--black)}
@@ -43,14 +43,13 @@
       <section class="intro" aria-labelledby="archive-title">
         <p class="eyebrow">archive://recovery_session</p>
         <h1 id="archive-title">PARADOX/OS</h1>
-        <p class="lead">The archive has lost its logic. Recover five mathematical nodes. Each accepts a different kind of proof.</p>
+        <p class="lead">The archive has lost its logic. Recover four mathematical nodes. Each accepts a different kind of proof.</p>
       </section>
-      <ol class="journey" aria-label="The five chapters">
+      <ol class="journey" aria-label="The four nodes">
         <li class="chapter"><span class="number">Node 01</span><span class="chapter-name">Zeno's Gate</span></li>
         <li class="chapter"><span class="number">Node 02</span><span class="chapter-name">The Oracle's Drop</span></li>
-        <li class="chapter"><span class="number">Node 03</span><span class="chapter-name">Hilbert's Infinite Hotel</span></li>
-        <li class="chapter"><span class="number">Node 04</span><span class="chapter-name">The Endless Corridor</span></li>
-        <li class="chapter"><span class="number">Node 05</span><span class="chapter-name">The Final Question</span></li>
+        <li class="chapter"><span class="number">Node 03</span><span class="chapter-name">The Endless Corridor</span></li>
+        <li class="chapter"><span class="number">Node 04</span><span class="chapter-name">Emergency Power</span></li>
       </ol>
       <div class="action-row"><a class="begin" href="zenos-gate.html">Initialize session →</a></div>
     </main>

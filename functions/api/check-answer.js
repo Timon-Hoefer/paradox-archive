@@ -1,13 +1,15 @@
 import {
-  bodyIsSmallEnough,
   cleanAnswer,
   clientIp,
   completionContent,
   constantTimeEqual,
+  consumeRateLimit,
   createSessionId,
   getSessionId,
   json,
   keyedHash,
+  methodNotAllowed,
+  readJsonBody,
   sameOrigin,
   sessionCookie,
   sessionHash
@@ -15,52 +17,18 @@ import {
 
 const WINDOW_SECONDS = 10 * 60;
 const MAX_ATTEMPTS = 12;
-const SESSION_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000;
+const SESSION_LIFETIME_MS = 100 * 24 * 60 * 60 * 1000;
 
-async function consumeAttempt(database, rateKey, nowSeconds) {
-  const current = await database
-    .prepare('SELECT window_started, attempts FROM rate_limits WHERE rate_key = ?')
-    .bind(rateKey)
-    .first();
-
-  if (!current || nowSeconds - Number(current.window_started) >= WINDOW_SECONDS) {
-    await database
-      .prepare(`INSERT INTO rate_limits (rate_key, window_started, attempts)
-                VALUES (?, ?, 1)
-                ON CONFLICT(rate_key) DO UPDATE SET window_started = excluded.window_started, attempts = 1`)
-      .bind(rateKey, nowSeconds)
-      .run();
-    return { allowed: true, retryAfter: 0 };
-  }
-
-  if (Number(current.attempts) >= MAX_ATTEMPTS) {
-    return {
-      allowed: false,
-      retryAfter: Math.max(1, WINDOW_SECONDS - (nowSeconds - Number(current.window_started)))
-    };
-  }
-
-  await database
-    .prepare('UPDATE rate_limits SET attempts = attempts + 1 WHERE rate_key = ?')
-    .bind(rateKey)
-    .run();
-  return { allowed: true, retryAfter: 0 };
-}
-
-export async function onRequestPost(context) {
+async function post(context) {
   const { request, env } = context;
   if (!sameOrigin(request)) return json({ error: 'forbidden' }, 403);
-  if (!bodyIsSmallEnough(request)) return json({ error: 'request_too_large' }, 413);
   if (!env.DB || !env.FINAL_ANSWER || !env.SESSION_SIGNING_KEY) {
     return json({ error: 'server_not_configured' }, 503);
   }
 
-  let payload;
-  try {
-    payload = await request.json();
-  } catch {
-    return json({ error: 'invalid_json' }, 400);
-  }
+  const body = await readJsonBody(request);
+  if (body.response) return body.response;
+  const payload = body.value;
 
   const supplied = cleanAnswer(payload?.answer);
   if (!supplied || supplied.length > 64) return json({ error: 'invalid_answer' }, 400);
@@ -72,7 +40,7 @@ export async function onRequestPost(context) {
   const now = Date.now();
   const nowSeconds = Math.floor(now / 1000);
   const ipKey = await keyedHash(env.SESSION_SIGNING_KEY, `rate:${clientIp(request)}`);
-  const attempt = await consumeAttempt(env.DB, ipKey, nowSeconds);
+  const attempt = await consumeRateLimit(env.DB, ipKey, nowSeconds, WINDOW_SECONDS, MAX_ATTEMPTS);
   const cookieHeaders = createdSession ? { 'Set-Cookie': sessionCookie(sessionId, request) } : {};
 
   if (!attempt.allowed) {
@@ -103,4 +71,9 @@ export async function onRequestPost(context) {
     200,
     { 'Set-Cookie': sessionCookie(sessionId, request) }
   );
+}
+
+export async function onRequest(context) {
+  if (context.request.method !== 'POST') return methodNotAllowed(['POST']);
+  return post(context);
 }
